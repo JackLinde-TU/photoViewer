@@ -1,21 +1,15 @@
 package com.example.photoviewer
 
-import android.graphics.BitmapFactory
-import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
-import com.karumi.dexter.Dexter
 import kotlinx.android.synthetic.main.activity_main.*
-import java.io.FileNotFoundException
 import android.Manifest
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.os.Build
-import android.provider.MediaStore
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -23,8 +17,7 @@ import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
 
-    val CAMERA_PERMISSION_CODE = 100
-    val STORAGE_PERMISSION_CODE = 101
+    private val storagePermissionCode = 101
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         val db = DatabaseHandler(context)
 
         btnInsert.setOnClickListener {
-            checkPermission(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), STORAGE_PERMISSION_CODE)
+            checkPermission(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), storagePermissionCode)
             choosePhotoFromGallery()
 //            if (etName.text.toString().isNotEmpty() && etAge.text.toString().isNotEmpty()) {
 //                val user = User(etName.text.toString(), etAge.text.toString().toInt())
@@ -64,7 +57,7 @@ class MainActivity : AppCompatActivity() {
     private fun choosePhotoFromGallery() {
         val galleryIntent: Intent = Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
 
-        startActivityForResult(galleryIntent, STORAGE_PERMISSION_CODE)
+        startActivityForResult(galleryIntent, storagePermissionCode)
     }
 
     private fun checkPermission(permission: Array<String>, requestCode: Int) {
@@ -80,7 +73,7 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == STORAGE_PERMISSION_CODE) {
+        if (requestCode == storagePermissionCode) {
             val contentUri = data?.data ?: return
             try {
                 val source = ImageDecoder.createSource(this.contentResolver, contentUri)
