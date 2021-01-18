@@ -59,23 +59,6 @@ class DatabaseHandler(private var context: Context) : SQLiteOpenHelper(context, 
         return list
     }
 
-    fun updateData() {
-        val db = this.writableDatabase
-        val query = "SELECT * FROM $TABLE_NAME"
-        val result = db.rawQuery(query, null)
-        if (result.moveToFirst()) {
-            do {
-                val cv = ContentValues()
-                cv.put(COL_AGE, result.getInt(result.getColumnIndex(COL_AGE))+1)
-                db.update(TABLE_NAME, cv, "$COL_ID=? AND $COL_NAME=?",
-                    arrayOf(result.getString(result.getColumnIndex(COL_ID)),
-                        result.getString(result.getColumnIndex(COL_NAME))))
-            } while (result.moveToNext())
-        }
-
-        result.close()
-        db.close()
-    }
 
     fun deleteData() {
         val db = this.writableDatabase
