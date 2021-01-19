@@ -1,18 +1,18 @@
 package com.example.photoviewer
 
 import android.graphics.Bitmap
+import java.io.File
 
 class Photo {
     var id: Int = 0
+    lateinit var image: Bitmap
+    var desc: String = ""
 
-    /** Nog fucked */
-//    var photo: Bitmap =
-//
-//    constructor(name:String, age:Int) {
-//        this.name = name
-//        this.age = age
-//    }
-//
-//    constructor() {
-//    }
+    constructor(photo: Bitmap, desc: String) {
+        this.image = photo
+        this.desc = desc
+    }
+
+    constructor() {
+    }
 }
