@@ -3,6 +3,6 @@
     <string name="btn_insert">Insert</string>
     <string name="btn_read">Read</string>
     <string name="btn_update">Update</string>
-    <string name="btn_delete">Delete</string>
+    <string name="btn_detect">Detect Faces</string>
 
 </resources>

@@ -14,6 +14,7 @@ import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.mlkit.vision.common.InputImage
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -65,9 +66,13 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        btnDelete.setOnClickListener {
-            db.deleteData()
-            btnRead.performClick()
+        btnDetect.setOnClickListener {
+            val data = db.readData()
+            ivDetectedFaces.setImageBitmap(data.last().image)
+            val image = InputImage.fromBitmap(data.last().image, 0)
+            val imgId = data.last().id
+            FaceDetectionActivity().detectFaces(this, image, imgId)
+
         }
 
     }
@@ -92,7 +97,7 @@ class MainActivity : AppCompatActivity() {
             try {
 
                 /** Run on background thread for better loading times */
-                Thread(Runnable {
+                Thread {
                     val source = ImageDecoder.createSource(this.contentResolver, contentUri)
                     val bitmap = ImageDecoder.decodeBitmap(source)
 
@@ -108,8 +113,8 @@ class MainActivity : AppCompatActivity() {
                     outputStream.close()
 
                     /** Insert data */
-                    DatabaseHandler(this).insertData(img, etDesc.text.toString())
-                }).start()
+                    DatabaseHandler(this).insertData(randomString, img, etDesc.text.toString())
+                }.start()
                 Toast.makeText(this, "Image Saved!", Toast.LENGTH_SHORT).show()
 
             } catch (e: IOException) {

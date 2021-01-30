@@ -38,13 +38,23 @@
             android:text="@string/btn_read" />
 
         <Button
-            android:id="@+id/btnDelete"
+            android:id="@+id/btnDetect"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:padding="10dp"
-            android:text="@string/btn_delete" />
+            android:text="@string/btn_detect" />
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/ivDetectedFaces"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
     </LinearLayout>
 
     <ScrollView
@@ -56,18 +66,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
-<!--            <ImageView-->
-<!--                android:id="@+id/ivImage"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="300dp"-->
-<!--                android:layout_gravity="center"-->
-<!--                android:src="@mipmap/ic_launcher"/>-->
-
-<!--            <TextView-->
-<!--                android:id="@+id/tvDesc"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content" />-->
 
         </LinearLayout>
 

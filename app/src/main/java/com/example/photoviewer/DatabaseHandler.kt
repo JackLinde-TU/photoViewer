@@ -10,6 +10,7 @@ import java.io.File
 const val DATABASE_NAME = "photoDB"
 const val TABLE_NAME = "photos"
 const val COL_ID = "id"
+const val COL_NAME = "name"
 const val COL_PHOTO = "img"
 const val COL_DESC = "description"
 
@@ -17,6 +18,7 @@ class DatabaseHandler(private var context: Context) : SQLiteOpenHelper(context, 
     override fun onCreate(db: SQLiteDatabase?) {
         val createTable = "CREATE TABLE " + TABLE_NAME + " (" +
                 COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                COL_NAME + " INTEGER(11) NOT NULL," +
                 COL_PHOTO + " VARCHAR(256) NOT NULL,"+
                 COL_DESC + " TEXT NULL)"
         db?.execSQL(createTable)
@@ -26,9 +28,10 @@ class DatabaseHandler(private var context: Context) : SQLiteOpenHelper(context, 
         TODO("Not yet implemented")
     }
 
-    fun insertData(img: File, desc: String) {
+    fun insertData(name: Long, img: File, desc: String) {
         val db = this.writableDatabase
         val cv = ContentValues()
+        cv.put(COL_NAME, name)
         cv.put(COL_PHOTO, img.toString())
         cv.put(COL_DESC, desc)
         db.insert(TABLE_NAME, null, cv)
@@ -45,6 +48,7 @@ class DatabaseHandler(private var context: Context) : SQLiteOpenHelper(context, 
             do {
                 val photo = Photo()
                 photo.id = result.getString(result.getColumnIndex(COL_ID)).toInt()
+                photo.name = result.getString(result.getColumnIndex(COL_NAME)).toLong()
                 photo.image = BitmapFactory.decodeFile(result.getString(result.getColumnIndex(COL_PHOTO)))
                 photo.desc = result.getString(result.getColumnIndex(COL_DESC)).toString()
                 list.add(photo)

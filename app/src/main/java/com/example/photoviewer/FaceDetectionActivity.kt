@@ -1,12 +1,20 @@
 package com.example.photoviewer
 
 import android.content.Context
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.ImageDecoder
 import android.net.Uri
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import com.google.android.gms.tasks.Task
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.*
+import kotlinx.android.synthetic.main.activity_main.*
+import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 
 class FaceDetectionActivity : AppCompatActivity() {
@@ -20,11 +28,10 @@ class FaceDetectionActivity : AppCompatActivity() {
         }
     }
 
-    fun detectFaces(context: Context, image: InputImage) {
-
+    fun detectFaces(context: Context, image: InputImage, id: Int) {
         // Set detector options
         val options = FaceDetectorOptions.Builder()
-            .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
+            .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
             .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_NONE)
             .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
             .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_NONE)
@@ -34,23 +41,42 @@ class FaceDetectionActivity : AppCompatActivity() {
         val detector = FaceDetection.getClient(options)
 
         // Run detector
-        val result = detector.process(image)
-            .addOnSuccessListener { faces ->
-                Toast.makeText(this, "Successfully recognized face(s)", Toast.LENGTH_SHORT).show()
+        detector.process(image)
+                .addOnSuccessListener { faces ->
+                    Toast.makeText(context, "Successfully recognized face(s): ${faces.size}", Toast.LENGTH_LONG).show()
+                    val bmp = image.bitmapInternal
+                    val data = DatabaseHandler(context).readData()
 
-                for (face in faces) {
-//                    graphicOverlay.add(FaceGraphic(graphicOverlay, face))
-
-//                    val bounds = face.boundingBox
-//                    val rotY = face.headEulerAngleY
-//                    val rotZ = face.headEulerAngleZ
-//
-//                    val leftEyeContour = face.getContour(FaceContour.LEFT_EYE)?.points
-//                    val rightEyeContour = face.getContour(FaceContour.RIGHT_EYE)?.points
+                    for ((index,face) in faces.withIndex()) {
+                        val bounds = face.boundingBox
+                        val topLeftCornerX = bounds.left
+                        val topLeftCornerY = bounds.top
+                        val imageWidth = bounds.right - bounds.left
+                        val imageHeight = bounds.bottom - bounds.top
+                        val rotY = face.headEulerAngleY // Head is rotated to the right rotY degrees
+                        val rotZ = face.headEulerAngleZ // Head is tilted sideways rotZ degrees
+                        val faceBmp = Bitmap.createBitmap(bmp, topLeftCornerX, topLeftCornerY, imageWidth, imageHeight)
+                        Thread {
+                            val fileName = "${data[id-1].name} ${File.pathSeparator} $index.png"
+                            context.openFileOutput(fileName, Context.MODE_PRIVATE).use {
+                                faceBmp.compress(Bitmap.CompressFormat.PNG, 100, it)
+                            }
+//                            val imgFile = File(faceDir, "${index.toString()}.png")
+//                            val outputStream = FileOutputStream(imgFile)
+//                            faceBmp.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+//                            outputStream.close()
+                        }.start()
+                    }
                 }
-            }
-            .addOnFailureListener { e ->
-                Toast.makeText(context, "Failure: $e", Toast.LENGTH_SHORT).show()
-            }
+                .addOnFailureListener { e ->
+
+                    Toast.makeText(context, "Failure: $e", Toast.LENGTH_SHORT).show()
+                }
+
+    }
+
+    private fun checkPermission(): Boolean {
+        val result = ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        return result == PackageManager.PERMISSION_GRANTED
     }
 }
