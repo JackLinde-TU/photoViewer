@@ -19,15 +19,6 @@ import java.io.IOException
 
 class FaceDetectionActivity : AppCompatActivity() {
 
-    fun imageFromPath(context: Context, uri: Uri) {
-        val image: InputImage
-        try {
-            image = InputImage.fromFilePath(context, uri)
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-    }
-
     fun detectFaces(context: Context, image: InputImage, id: Int) {
         // Set detector options
         val options = FaceDetectorOptions.Builder()
@@ -53,19 +44,13 @@ class FaceDetectionActivity : AppCompatActivity() {
                         val topLeftCornerY = bounds.top
                         val imageWidth = bounds.right - bounds.left
                         val imageHeight = bounds.bottom - bounds.top
-                        val rotY = face.headEulerAngleY // Head is rotated to the right rotY degrees
-                        val rotZ = face.headEulerAngleZ // Head is tilted sideways rotZ degrees
                         val faceBmp = Bitmap.createBitmap(bmp, topLeftCornerX, topLeftCornerY, imageWidth, imageHeight)
-                        val faceBmp_cropped = Bitmap.createScaledBitmap(faceBmp, 122, 122, true)
+                        val faceBmpCropped = Bitmap.createScaledBitmap(faceBmp, 122, 122, true)
                         Thread {
                             val fileNameCropped = "${data[id-1].name} ${File.pathSeparator} $index cropped.png"
                             context.openFileOutput(fileNameCropped, Context.MODE_PRIVATE).use {
-                                faceBmp_cropped.compress(Bitmap.CompressFormat.PNG, 100, it)
+                                faceBmpCropped.compress(Bitmap.CompressFormat.PNG, 100, it)
                             }
-//                            val imgFile = File(faceDir, "${index.toString()}.png")
-//                            val outputStream = FileOutputStream(imgFile)
-//                            faceBmp.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-//                            outputStream.close()
                         }.start()
                     }
                 }
@@ -76,8 +61,8 @@ class FaceDetectionActivity : AppCompatActivity() {
 
     }
 
-    private fun checkPermission(): Boolean {
-        val result = ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        return result == PackageManager.PERMISSION_GRANTED
-    }
+//    private fun checkPermission(): Boolean {
+//        val result = ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+//        return result == PackageManager.PERMISSION_GRANTED
+//    }
 }

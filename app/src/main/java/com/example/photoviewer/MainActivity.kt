@@ -118,9 +118,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Image Saved!", Toast.LENGTH_SHORT).show()
 
             } catch (e: IOException) {
-
                 e.printStackTrace()
-
             }
         }
     }
