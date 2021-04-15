@@ -56,10 +56,11 @@ class FaceDetectionActivity : AppCompatActivity() {
                         val rotY = face.headEulerAngleY // Head is rotated to the right rotY degrees
                         val rotZ = face.headEulerAngleZ // Head is tilted sideways rotZ degrees
                         val faceBmp = Bitmap.createBitmap(bmp, topLeftCornerX, topLeftCornerY, imageWidth, imageHeight)
+                        val faceBmp_cropped = Bitmap.createScaledBitmap(faceBmp, 122, 122, true)
                         Thread {
-                            val fileName = "${data[id-1].name} ${File.pathSeparator} $index.png"
-                            context.openFileOutput(fileName, Context.MODE_PRIVATE).use {
-                                faceBmp.compress(Bitmap.CompressFormat.PNG, 100, it)
+                            val fileNameCropped = "${data[id-1].name} ${File.pathSeparator} $index cropped.png"
+                            context.openFileOutput(fileNameCropped, Context.MODE_PRIVATE).use {
+                                faceBmp_cropped.compress(Bitmap.CompressFormat.PNG, 100, it)
                             }
 //                            val imgFile = File(faceDir, "${index.toString()}.png")
 //                            val outputStream = FileOutputStream(imgFile)
